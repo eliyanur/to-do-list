@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>To-Do List </title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+  <!-- SWEETALERT2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #f39c12;
+      --secondary-hover: #d68910;
+      --light-bg: #f4f6f8;
+      --white: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --transition-speed: 0.3s;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: url('asset/BG 1.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--primary-color);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 20px;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .todo-container {
+      background: var(--white);
+      padding: 30px 40px;
+      border-radius: 20px;
+      box-shadow: 0 12px 24px var(--shadow);
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-weight: 700;
+      color: var(--secondary-color);
+      letter-spacing: 1.5px;
+      user-select: none;
+    }
+
+    form#task-form {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    input[type='text']#task-title {
+      flex-grow: 1;
+      min-width: 200px;
+      padding: 14px 20px;
+      border: 2px solid var(--primary-color);
+      border-radius: 12px;
+      font-size: 17px;
+      transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+      background-color: #fcfcfc;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.07);
+      outline-offset: 2px;
+    }
+
+    input[type='text']#task-title:focus {
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 10px var(--secondary-color);
+      outline: none;
+      background-color: #fff;
+    }
+
+    button[type='submit'] {
+      background-color: var(--secondary-color);
+      border: none;
+      color: var(--white);
+      padding: 14px 28px;
+      font-weight: 700;
+      font-size: 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color var(--transition-speed);
+      white-space: nowrap;
+      box-shadow: 0 6px 12px rgba(243, 156, 18, 0.5);
+    }
+
+    button[type='submit']:hover {
+      background-color: var(--secondary-hover);
+      box-shadow: 0 8px 16px rgba(214, 137, 16, 0.7);
+    }
+
+    .task {
+      background: var(--white);
+      margin-bottom: 20px;
+      border-radius: 15px;
+      padding: 25px 30px;
+      border-left: 6px solid var(--secondary-color);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+      transition: transform 0.2s ease;
+    }
+
+    .task:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      user-select: none;
+    }
+
+    .task-header h3 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 22px;
+      color: var(--primary-color);
+      word-break: break-word;
+    }
+
+    .delete-task-btn {
+      background: transparent;
+      border: none;
+      color: #e74c3c;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s ease;
+    }
+
+    .delete-task-btn:hover {
+      color: #c0392b;
+    }
+
+    ul.subtasks {
+      list-style: disc inside;
+      padding-left: 22px;
+      max-height: 220px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+    }
+
+    ul.subtasks li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 6px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.2s ease;
+      user-select: none;
+    }
+
+    ul.subtasks li:hover {
+      background-color: #f9f9f9;
+    }
+
+    ul.subtasks li.completed {
+      text-decoration: line-through;
+      color: #aaa;
+    }
+
+    ul.subtasks li button.delete-subtask {
+      background: transparent;
+      border: none;
+      color: var(--secondary-color);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 2px;
+      transition: color 0.2s ease;
+    }
+
+    ul.subtasks li button.delete-subtask:hover {
+      color: #d68910;
+    }
+
+    .add-subtask-form {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .add-subtask-form input {
+      flex-grow: 1;
+      padding: 10px 14px;
+      border: 1.5px solid var(--primary-color);
+      border-radius: 8px;
+      font-size: 15px;
+      transition: border-color var(--transition-speed);
+    }
+
+    .add-subtask-form input:focus {
+      outline: none;
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 6px var(--secondary-color);
+      background-color: #fff;
+    }
+
+    .add-subtask-form button {
+      padding: 10px 20px;
+      font-size: 15px;
+      background-color: var(--secondary-color);
+      border: none;
+      border-radius: 8px;
+      color: var(--white);
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color var(--transition-speed);
+      box-shadow: 0 4px 10px rgba(243, 156, 18, 0.5);
+    }
+
+    .add-subtask-form button:hover {
+      background-color: var(--secondary-hover);
+      box-shadow: 0 6px 14px rgba(214, 137, 16, 0.7);
+    }
+
+    .toggle-subtask-btn {
+      margin-top: 10px;
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+
+    .toggle-subtask-btn:hover {
+      background-color: #2980b9;
+    }
+
+    /* Scrollbar styling for subtasks */
+    ul.subtasks::-webkit-scrollbar {
+      width: 6px;
+    }
+    ul.subtasks::-webkit-scrollbar-thumb {
+      background-color: var(--secondary-color);
+      border-radius: 3px;
+    }
+    ul.subtasks::-webkit-scrollbar-track {
+      background-color: #f1f1f1;
+      border-radius: 3px;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      body {
+        padding: 20px 10px;
+      }
+      .todo-container {
+        padding: 20px 25px;
+        max-width: 100%;
+      }
+      form#task-form {
+        flex-direction: column;
+      }
+      button[type='submit'] {
+        width: 100%;
+        padding: 14px 0;
+      }
+      .toggle-subtask-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="todo-container" role="main" aria-label="Daftar To-Do List">
+    <h1>To-Do List </h1>
+
+    <form id="task-form" aria-label="Form tambah tugas">
+      <input
+        type="text"
+        id="task-title"
+        placeholder="Isi Tugas"
+        autocomplete="off"
+        aria-required="true"
+        aria-describedby="taskTitleHelp"
+      />
+      <button type="submit" aria-label="Tambah tugas">Tambah Tugas</button>
+    </form>
+
+    <div id="tasks-container" aria-live="polite" aria-relevant="additions removals"></div>
+  </div>
+
+  <script>
+    const taskForm = document.getElementById('task-form');
+    const taskTitleInput = document.getElementById('task-title');
+    const tasksContainer = document.getElementById('tasks-container');
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+    function saveTasks() {
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    function renderTasks() {
+      tasksContainer.innerHTML = '';
+
+      tasks.forEach((task, taskIndex) => {
+        const taskDiv = document.createElement('div');
+        taskDiv.className = 'task';
+        taskDiv.setAttribute('data-index', taskIndex);
+
+        // Task header (judul + tombol hapus)
+        const taskHeader = document.createElement('div');
+        taskHeader.className = 'task-header';
+
+        const taskTitle = document.createElement('h3');
+        taskTitle.textContent = task.title;
+
+        const deleteTaskBtn = document.createElement('button');
+        deleteTaskBtn.className = 'delete-task-btn';
+        deleteTaskBtn.setAttribute('aria-label', `Hapus tugas ${task.title}`);
+        deleteTaskBtn.innerHTML = `<i class="fa fa-trash"></i> Hapus`;
+        deleteTaskBtn.addEventListener('click', () => {
+          Swal.fire({
+            title: `Hapus tugas "${task.title}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              tasks.splice(taskIndex, 1);
+              saveTasks();
+              renderTasks();
+              Swal.fire('Terhapus!', 'Tugas berhasil dihapus.', 'success');
+            }
+          });
+        });
+
+        taskHeader.appendChild(taskTitle);
+        taskHeader.appendChild(deleteTaskBtn);
+
+        // Subtasks list
+        const subtaskList = document.createElement('ul');
+        subtaskList.className = 'subtasks';
+        subtaskList.setAttribute('aria-label', `Daftar keterangan tugas ${task.title}`);
+
+        task.subtasks.forEach((subtask, subtaskIndex) => {
+          const li = document.createElement('li');
+          li.textContent = subtask.text;
+          if (subtask.completed) {
+            li.classList.add('completed');
+          }
+          li.tabIndex = 0;
+          li.setAttribute('role', 'button');
+          li.setAttribute('aria-pressed', subtask.completed);
+          li.addEventListener('click', () => {
+            tasks[taskIndex].subtasks[subtaskIndex].completed = !tasks[taskIndex].subtasks[subtaskIndex].completed;
+            saveTasks();
+            renderTasks();
+          });
+          li.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              li.click();
+            }
+          });
+
+          // Delete subtask button
+          const deleteSubtaskBtn = document.createElement('button');
+          deleteSubtaskBtn.className = 'delete-subtask';
+          deleteSubtaskBtn.setAttribute('aria-label', `Hapus keterangan ${subtask.text}`);
+          deleteSubtaskBtn.innerHTML = '<i class="fa fa-times"></i>';
+          deleteSubtaskBtn.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            Swal.fire({
+              title: `Hapus keterangan "${subtask.text}"?`,
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#d33',
+              cancelButtonColor: '#3085d6',
+              confirmButtonText: 'Ya, hapus!',
+              cancelButtonText: 'Batal'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                tasks[taskIndex].subtasks.splice(subtaskIndex, 1);
+                saveTasks();
+                renderTasks();
+                Swal.fire('Terhapus!', 'Keterangan berhasil dihapus.', 'success');
+              }
+            });
+          });
+
+          li.appendChild(deleteSubtaskBtn);
+          subtaskList.appendChild(li);
+        });
+
+        // Form tambah keterangan (subtask)
+        const addSubtaskForm = document.createElement('form');
+        addSubtaskForm.className = 'add-subtask-form';
+        addSubtaskForm.setAttribute('aria-label', `Form tambah keterangan untuk tugas ${task.title}`);
+
+        const inputSubtask = document.createElement('input');
+        inputSubtask.type = 'text';
+        inputSubtask.placeholder = 'Tambah keterangan...';
+        inputSubtask.autocomplete = 'off';
+        inputSubtask.required = true;
+
+        const btnAddSubtask = document.createElement('button');
+        btnAddSubtask.type = 'submit';
+        btnAddSubtask.textContent = 'Tambah';
+
+        addSubtaskForm.appendChild(inputSubtask);
+        addSubtaskForm.appendChild(btnAddSubtask);
+
+        addSubtaskForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const text = inputSubtask.value.trim();
+          if (text) {
+            tasks[taskIndex].subtasks.push({ text, completed: false });
+            saveTasks();
+            renderTasks();
+          }
+        });
+
+        taskDiv.appendChild(taskHeader);
+        taskDiv.appendChild(subtaskList);
+        taskDiv.appendChild(addSubtaskForm);
+
+        tasksContainer.appendChild(taskDiv);
+      });
+    }
+
+    taskForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = taskTitleInput.value.trim();
+      if (!title) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Judul tugas tidak boleh kosong!',
+        });
+        return;
+      }
+
+      // Cek duplicate judul
+      if (tasks.some((t) => t.title.toLowerCase() === title.toLowerCase())) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Peringatan',
+          text: 'Judul tugas sudah ada, coba yang lain ya.',
+        });
+        return;
+      }
+
+      tasks.push({ title, subtasks: [] });
+      saveTasks();
+      renderTasks();
+      taskTitleInput.value = '';
+      taskTitleInput.focus();
+    });
+
+    renderTasks();
+  </script>
+</body>
+</html>
